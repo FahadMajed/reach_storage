@@ -3,6 +3,5 @@ import 'package:reach_storage/reach_storage.dart';
 
 final storagePvdr =
     StateNotifierProvider<StorageNotifier, AsyncValue<String>>((ref) {
-  return StorageNotifier(
-      ref.read(storageRepoPvdr), ref.watch(imageFilePvdr).value);
+  return StorageNotifier(ref.read, ref.watch(imageFilePvdr).value);
 });
