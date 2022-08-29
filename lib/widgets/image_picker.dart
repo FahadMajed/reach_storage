@@ -1,7 +1,6 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:reach_core/core/core.dart';
@@ -11,9 +10,17 @@ class ImagePickerContainer extends ConsumerWidget {
   final DecorationType decorationType;
   final String imageUrl;
 
+  ///will be triggered when new file is uploaded, with the file url as parameter
+  final void Function(String) whenData;
+
+  ///e.g. used to set isLoading
+  final void Function() whenLoading;
+
   const ImagePickerContainer({
     Key? key,
     required this.imageUrl,
+    required this.whenData,
+    required this.whenLoading,
     this.decorationType = DecorationType.register,
   }) : super(key: key);
 
@@ -21,18 +28,32 @@ class ImagePickerContainer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final imageNotifier = ref.watch(imageFilePvdr.notifier);
 
+    ref.watch(storagePvdr).when(
+          data: (url) => "",
+          error: (e, t) => throw e,
+          loading: whenLoading,
+        );
+
+    ref.listen<AsyncValue<String>>(
+      storagePvdr,
+      ((previousUrlAsync, nextUrlAsync) {
+        // final prevUrl = previousUrlAsync?.value ?? "";
+        final nextUrl = nextUrlAsync.value ?? "";
+
+        if (nextUrl.isNotEmpty && nextUrl != imageUrl) {
+          whenData(nextUrl);
+        }
+      }),
+    );
+
     return GestureDetector(
       onTap: () async => ActionSheetHandler.showActionSheet(
         actions: {
           "Photo Library": () async => await imageNotifier
-              .pickImage(
-                ImageSource.gallery,
-              )
+              .pickImage(ImageSource.gallery)
               .then((_) => Get.close(1)),
           "Camera": () async => await imageNotifier
-              .pickImage(
-                ImageSource.camera,
-              )
+              .pickImage(ImageSource.camera)
               .then((_) => Get.close(1)),
         },
       ),

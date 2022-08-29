@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:reach_core/core/core.dart';
+import 'package:reach_storage/reach_storage.dart';
 
 class StorageRepository {
   final FirebaseStorage storage;
@@ -19,3 +21,6 @@ class StorageRepository {
     );
   }
 }
+
+final storageRepoPvdr =
+    Provider((ref) => StorageRepository(ref.read(storageServicePvdr)));

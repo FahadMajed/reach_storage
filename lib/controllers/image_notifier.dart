@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
+final imageFilePvdr = StateNotifierProvider<ImageNotifier, AsyncValue<File?>>(
+    (ref) => ImageNotifier());
+
 class ImageNotifier extends StateNotifier<AsyncValue<File?>> {
   final ImagePicker _imagePicker = ImagePicker();
 

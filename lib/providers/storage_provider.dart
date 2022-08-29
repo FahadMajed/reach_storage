@@ -4,6 +4,3 @@ import 'package:reach_storage/reach_storage.dart';
 
 final storageServicePvdr =
     Provider<FirebaseStorage>((ref) => throw UnimplementedError());
-
-final storageRepoPvdr =
-    Provider((ref) => StorageRepository(ref.read(storageServicePvdr)));

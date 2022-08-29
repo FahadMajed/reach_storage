@@ -3,13 +3,14 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reach_storage/reach_storage.dart';
 
-class StorageNotifier extends StateNotifier<AsyncValue<String>> {
-  final Reader _read;
-  late final StorageRepository _repository;
-  final File? file;
-  StorageNotifier(this._read, this.file) : super(const AsyncData("")) {
-    _repository = _read(storageRepoPvdr);
+final storagePvdr = StateNotifierProvider<StorageNotifier, AsyncValue<String>>(
+    (ref) => StorageNotifier(
+        ref.read(storageRepoPvdr), ref.watch(imageFilePvdr).value));
 
+class StorageNotifier extends StateNotifier<AsyncValue<String>> {
+  final StorageRepository _repository;
+  final File? file;
+  StorageNotifier(this._repository, this.file) : super(const AsyncData("")) {
     if (file != null) uploadImageFile(file!);
   }
 
