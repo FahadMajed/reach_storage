@@ -13,14 +13,10 @@ class ImagePickerContainer extends ConsumerWidget {
   ///will be triggered when new file is uploaded, with the file url as parameter
   final void Function(String) whenData;
 
-  ///e.g. used to set isLoading
-  final void Function() whenLoading;
-
   const ImagePickerContainer({
     Key? key,
     required this.imageUrl,
     required this.whenData,
-    required this.whenLoading,
     this.decorationType = DecorationType.register,
   }) : super(key: key);
 
@@ -28,16 +24,9 @@ class ImagePickerContainer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final imageNotifier = ref.watch(imageFilePvdr.notifier);
 
-    ref.watch(storagePvdr).when(
-          data: (url) => "",
-          error: (e, t) => throw e,
-          loading: whenLoading,
-        );
-
     ref.listen<AsyncValue<String>>(
       storagePvdr,
-      ((previousUrlAsync, nextUrlAsync) {
-        // final prevUrl = previousUrlAsync?.value ?? "";
+      ((_, nextUrlAsync) {
         final nextUrl = nextUrlAsync.value ?? "";
 
         if (nextUrl.isNotEmpty && nextUrl != imageUrl) {
@@ -65,15 +54,20 @@ class ImagePickerContainer extends ConsumerWidget {
             child: Container(
               decoration: _getBoxDecoration(),
               child: Align(
-                  widthFactor: 1,
-                  heightFactor: 1,
-                  child: (imageUrl.isNotEmpty)
-                      ? Avatar(
-                          link: imageUrl,
-                        )
-                      : decorationType == DecorationType.register
-                          ? const Text("pick photo")
-                          : const EmptyAvatar()),
+                widthFactor: 1,
+                heightFactor: 1,
+                child: ref.watch(storagePvdr).when(
+                      data: (url) => (imageUrl.isNotEmpty)
+                          ? Avatar(
+                              link: imageUrl,
+                            )
+                          : decorationType == DecorationType.register
+                              ? const Text("pick photo")
+                              : const EmptyAvatar(),
+                      error: (e, t) => throw e,
+                      loading: () => const CircularProgressIndicator(),
+                    ),
+              ),
             ),
           ),
         ),

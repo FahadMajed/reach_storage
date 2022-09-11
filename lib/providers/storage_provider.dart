@@ -3,4 +3,4 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reach_storage/reach_storage.dart';
 
 final storageServicePvdr =
-    Provider<FirebaseStorage>((ref) => throw UnimplementedError());
+    Provider<FirebaseStorage>((ref) => FirebaseStorage.instance);
